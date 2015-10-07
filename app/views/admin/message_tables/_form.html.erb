@@ -1,0 +1,60 @@
+<%= form_for @message_table, :url => (@message_table.id.present? ? admin_message_table_path(@message_table) : admin_message_tables_path), :html => { :class => 'form-horizontal' } do |f| %>
+<div class="control-group">
+	<%= f.label :name, "*名称:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :name, :maxlength => 255 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :table_name, "*英文名:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :table_name, :maxlength => 255 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :description, "描述:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_area :description, :maxlength => 255 %>
+	</div>
+</div>
+<!--
+<div class="control-group">
+	<%= f.label :start_at, "开始时间:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :start_at, :value => format_date(@message_table.start_at), :onfocus => "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})", :class => "Wdate", :readonly => true, :maxlength => 255 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :end_at, "结束时间:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :end_at, :value => format_date(@message_table.end_at), :onfocus => "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})", :class => "Wdate", :readonly => true, :maxlength => 255 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :logined, "登录?:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.check_box :logined %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :show_front, "前台显示?:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.check_box :show_front %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :verify, "审核?:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.check_box :verify %>
+	</div>
+</div>
+-->
+    <div class="form-actions">
+    <%= f.button :submit, :class => 'btn btn-primary' %>
+    <%= link_to '取消', admin_message_tables_path, :class => 'btn' %>
+  </div>
+<% end -%>
+
+<%= content_for :javascripts do -%>
+<script type="text/javascript" charset="utf-8" src="/module/my97/WdatePicker.js"></script>	
+<% end -%> 

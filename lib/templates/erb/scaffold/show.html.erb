@@ -1,0 +1,9 @@
+<%%= render :partial => '/admin/public/actions' %>
+<table class="table table-bordered">
+	<% for attribute in attributes -%>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong><%= attribute.human_name %>:</strong></td>
+		<td><%%= @<%= singular_table_name %>.<%= attribute.name %> %></td>
+	</tr>
+	<% end -%>
+</table>

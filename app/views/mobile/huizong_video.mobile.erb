@@ -1,0 +1,35 @@
+<div class="newstop">
+        <a href="http://m.xredu.com/"></a>
+        <p>
+            <%=@node.name %>
+        </p>
+        <div class="clear">
+        </div>
+    </div>
+   <% @node.children.each do |node| %>
+    <h3 class="hp_grh3">
+        <span><%=node.name %></span> <a href="<%=node.mobile_list_url %>">更多</a>
+        <div class="clear">
+        </div>
+    </h3>
+    <div class="hp_news_list3">
+        <ul>
+            <% node.articles.where("status = 2 and released = true").order("commend DESC, id DESC").limit(4).each do |article| %>
+            <li><a href="<%=article.html_page_first_url %>">
+                <div class="hp_news_list3_itemleft videojian">
+                    <p>
+                        <%=(article.title.length > 15 ? article.title[0...15] : article.title) %>
+                    </p>
+                    <span><%=article.click %>&nbsp;&nbsp;<%=article.created_at.strftime("%Y-%m-%d") %></span>
+                </div>
+                <img alt="" src="<%=file_url(article.img_path) %>" /><div class="clear"></div>
+            </a></li>
+            <% end %>
+            <div class="clear"></div>
+        </ul>
+    </div>
+    <h2 class="hp_redh2">
+        <a href="tel:4006202002" onclick="ga('send','event','tel','tel-huizongvideo','tel-400');">客服电话:400-620-2002 </a>
+    </h2>
+  <% end %>
+  <%= Fragment.find(589).content.html_safe %>

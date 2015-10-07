@@ -1,0 +1,9 @@
+<%%= simple_form_for @<%= singular_table_name %>, :url => (@<%= singular_table_name %>.id.present? ? <%= singular_table_name %>_path(@<%= singular_table_name %>) : <%= plural_table_name %>_path), :html => { :class => 'form-horizontal' } do |f| %>
+  <% for attribute in attributes -%>
+  <%%= f.input :<%= attribute.name %> %>
+  <% end -%>
+  <div class="form-actions">
+    <%%= f.button :submit, :class => 'btn-primary' %>
+    <%%= link_to '取消', <%= plural_table_name %>_path, :class => 'btn' %>
+  </div>
+<%% end -%> 

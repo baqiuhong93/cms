@@ -1,0 +1,42 @@
+<%= render :partial => '/admin/public/actions' %>
+<table class="table table-bordered">
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>名称:</strong></td>
+		<td><%= @friend_link.name %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>简介:</strong></td>
+		<td><%= @friend_link.description %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>排序:</strong></td>
+		<td><%= @friend_link.sortrank %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>网址:</strong></td>
+		<td><%= @friend_link.addr %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>范围:</strong></td>
+		<td>
+			<% _type_ids = eval(@friend_link.type_ids) %>
+			<% GlobalSettings.friend_link_types.each do |type| %>
+				<% if _type_ids.include?(type[0]) %>
+					<%= type[1] %> 
+				<% end %>
+			<% end %>
+		</td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>图片:</strong></td>
+		<td>
+			<% if !@friend_link.img_path.nil? %>
+			<%= link_to "查看", file_url(@friend_link.img_path) %>
+			<% end %>
+		</td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>状态:</strong></td>
+		<td><%= @friend_link.status_text %></td>
+	</tr>
+	</table>

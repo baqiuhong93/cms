@@ -1,0 +1,74 @@
+<div class="newstop">
+        <a href="http://m.xredu.com"></a>
+        <p class="sml">
+            <%=@article.title %>
+        </p>
+        <div class="clear">
+        </div>
+    </div>
+    <h3 class="news_h3">
+        <a href="tel:4006202002" onclick="ga('send','event','tel','tel-showvideo','tel-400');">咨询热线：400-620-2002</a>
+    </h3>
+    <div class="news_video">
+        <%=@article.article_texts[params[:page].nil? ? 0 : params[:page].to_i-1].html_safe %>
+        <div class="clear">
+        </div>
+    </div>
+    <h2 class="news_video_tt">
+        <span>课程简介 </span>
+    </h2>
+    <div class="news_con">
+        <h2 class="contt">
+            <%=@article.title %>
+        </h2>
+        <br />
+        <div class="news_video_tools">
+            <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td>
+                        主讲:<span><%=@article.writer %></span>
+                    </td>
+                    <td>
+                        <a href="tel:4006202002" onclick="ga('send','event','tel','tel-showvideo','tel-400');">点击咨询客服</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="cosp"><%=@article.click %></span>
+                    </td>
+					
+
+<% if !@article.origin.nil? %>
+      <td>
+              <span><a href="<%=@article.origin.addr%>"  class="orga">购买完整课程</a></span>
+      </td>
+<% end %>					
+					
+                </tr>
+            </table>
+        </div>
+        <br />
+        <%=@article.description %>
+        <br />
+        <br /> 
+    </div>
+    <% if @article.page_size > 1 %>
+     <div class="news_page">
+        <p class="page_p">
+
+            第 
+            <% (1..@article.page_size).to_a.each do |i|%>
+            <a href="<%=@article.html_page_first_url %>?page=<%=i %>" class="page_cur"><%=i %></a>
+            <% end %>
+            页
+        </p>
+        <div class="clear"></div>
+    </div>
+    <% end %>
+    <h3 class="hp_grh3">
+        热门活动
+    </h3>
+    <a href="http://product.xredu.com/" class="hp_botad">
+        <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/hp_ad4.gif" />
+    </a>
+<%= Fragment.find(589).content.html_safe %>

@@ -1,0 +1,340 @@
+<ul id="collection_controller_actions" class="nav nav-tabs">
+	<li class="active"><%= link_to('<i class="icon-th-list"></i>列表'.html_safe, admin_nodes_path) %></li>
+	<% if can? :create, Node %>
+	<li><a href="<%= new_admin_node_path(:pId => 0) %>"><i class="icon-plus"></i>新增</a></li>
+	<% end %>
+</ul>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr><td><input type="text" class="span3" id="node_name" placeholder="名称"></td></tr>
+	<tr><td><div class="zTreeDemoBackground left">
+	<ul id="node_tree_ztree" class="ztree"></ul>
+</div></td></tr>
+</table>
+
+<div id="nodeTreeModal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>栏目树</h3>
+  </div>
+  <div id="nodeTreeModalBody" class="modal-body">
+    <p><iframe id="nodeTreeModalIframe" width="100%" height="960" scrolling="no" frameborder="0"></iframe></p>
+  </div>
+  <div class="modal-footer">
+      <a href="javascript:void(0);" onclick="$('#nodeTreeModal').modal('hide');" class="btn">关闭</a>
+      <a href="javascript:void(0);" onclick="iframe_node_node_form_submit();" class="btn btn-primary">保存</a>
+    </div>
+</div>
+<%= content_for :stylesheets do -%>
+<link rel="stylesheet" href="/module/ztree/css/zTreeStyle.css" type="text/css" charset="utf-8">
+<style type="text/css">
+.ztree li span.button.add{margin:0; background: url(/module/ztree/css/img/diy/add.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.pIcon01_ico_open{margin-right:2px; background: url(/module/ztree/css/img/diy/1_open.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.pIcon01_ico_close{margin-right:2px; background: url(/module/ztree/css/img/diy/1_close.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.icon01_ico_docu{margin-right:2px; background: url(/module/ztree/css/img/diy/3.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+
+</style>
+<% end -%>
+
+<%= content_for :javascripts do -%>
+<script type="text/javascript" charset="utf-8" src="/module/ztree/js/jquery.ztree.core-3.5.js"></script>
+<script type="text/javascript" charset="utf-8" src="/module/ztree/js/jquery.ztree.excheck-3.5.js"></script>
+<script type="text/javascript" charset="utf-8" src="/module/ztree/js/jquery.ztree.exedit-3.5.js"></script>
+<script type="text/javascript">
+<!--
+var IDMark_Switch = "_switch",
+		IDMark_Icon = "_ico",
+		IDMark_Span = "_span",
+		IDMark_Input = "_input",
+		IDMark_Check = "_check",
+		IDMark_Edit = "_edit",
+		IDMark_Remove = "_remove",
+		IDMark_Ul = "_ul",
+		IDMark_A = "_a";
+var setting = {
+	check: {
+		enable: true,
+		chkboxType : { "Y" : "s", "N" : "s" }
+	},
+	view: {
+		addHoverDom: addHoverDom,
+		removeHoverDom: removeHoverDom,
+		addDiyDom: addDiyDom
+	},
+	data: {
+		simpleData: {
+			enable: true
+		}
+	}
+};
+function addHoverDom(treeId, treeNode) {
+			
+	var aObj = $("#" + treeNode.tId + IDMark_A);
+
+	<% if can? :main, :article %>
+	if (treeNode.node_type == 2) {
+		if ($("#node_article_new_"+treeNode.id).length>0) return;
+		var newStr = "<a id='node_article_new_" +treeNode.id+ "' href='javascript:node_article_list("+treeNode.id+")' style='margin:0 0 0 5px;'>文章</a>";
+		aObj.append(newStr);
+	}
+	<% end %>
+	
+	<% if can? :upload, :node %>
+	if ($("#node_upload_"+treeNode.id).length>0) return;
+		if(treeNode.temp_node_id == undefined) {
+			var editStr = "<a id='node_upload_" +treeNode.id+ "' href='/admin/nodes/"+treeNode.id+"/upload'>上传</a>";
+			aObj.append(editStr);
+		}
+	<% end %>
+	
+	<% if can? :down, :node %>
+	if ($("#node_down_"+treeNode.id).length>0) return;
+		if(treeNode.temp_node_id == undefined) {
+			var editStr = "<a id='node_down_" +treeNode.id+ "' href='/admin/nodes/"+treeNode.id+"/down'>下载</a>";
+			aObj.append(editStr);
+		}
+	<% end %>
+
+	<% if can? :view, :node %>
+	if ($("#node_view_"+treeNode.id).length>0) return;
+		var editStr = "<a id='node_view_" +treeNode.id+ "' href='/admin/nodes/"+treeNode.id+"/view' target='node_view'>预览</a>";
+		aObj.append(editStr);
+	<% end %>
+
+	<% if can? :released, :node %>
+	if ($("#node_released_"+treeNode.id).length>0) return;
+	if(treeNode.status == 1) {
+		var editStr = "<a id='node_released_" +treeNode.id+ "' href=\"javascript:released_node("+treeNode.id + ",'" + treeNode.name + "')\">发布</a>";
+		aObj.append(editStr);	
+	}
+	<% end %>
+	
+	<% if can? :released_articles, :node %>
+	if ($("#node_released_articles_"+treeNode.id).length>0) return;
+	if(treeNode.node_type == 2) {
+		var editStr = "<a id='node_released_articles_" +treeNode.id+ "' href=\"javascript:released_articles_node("+treeNode.id + ",'" + treeNode.name + "')\">发布文章</a>";
+		aObj.append(editStr);
+	}
+	<% end %>
+	
+	<% if can? :new, :node %>
+	if ($("#node_new_"+treeNode.id).length>0) return;
+		var newStr = "<a id='node_new_" +treeNode.id+ "' href='#' onclick='new_admin_node_node_ajax("+treeNode.id+")'>新增</a>";
+		aObj.append(newStr);
+	<% end %>
+
+	<% if can? :edit, :node %>
+	if ($("#node_update_"+treeNode.id).length>0) return;
+		var editStr = "<a id='node_update_" +treeNode.id+ "' href=\"javascript:location.href='/admin/nodes/"+treeNode.id+"/edit';\">修改</a>";
+		aObj.append(editStr);
+	<% end %>
+
+	<% if can? :destroy, :node %>
+	if ($("#node_destroy_"+treeNode.id).length>0) return;
+		var editStr = "<a id='node_destroy_" +treeNode.id+ "' href='javascript:void(0)' onclick=\"destroy_node("+treeNode.id + ",'" + treeNode.name + "')\">删除</a>";
+		aObj.append(editStr);
+	<% end %>
+
+}
+
+function removeHoverDom(treeId, treeNode) {
+	$("#node_article_new_"+treeNode.id).unbind().remove();
+	
+	$("#node_upload_"+treeNode.id).unbind().remove();
+	
+	$("#node_down_"+treeNode.id).unbind().remove();
+	
+	$("#node_new_"+treeNode.id).unbind().remove();
+	
+	$("#node_update_"+treeNode.id).unbind().remove();
+
+	$("#node_destroy_"+treeNode.id).unbind().remove();
+	
+	$("#node_view_"+treeNode.id).unbind().remove();
+	
+	$("#node_released_"+treeNode.id).unbind().remove();
+	
+	$("#node_released_articles_"+treeNode.id).unbind().remove();
+			
+}
+
+function addDiyDom(treeId, treeNode) {
+			
+}
+
+function iframe_node_node_form_submit() {
+	var oIframe = document.getElementById("nodeTreeModalIframe");
+	var oWin = oIframe.name ? window.frames[oIframe.name] : oIframe.contentWindow;
+	oWin.node_node_form_submit();
+}
+
+function node_node_reload(node_json, action) {
+	$('#nodeTreeModal').modal('hide');
+	var zTree = $.fn.zTree.getZTreeObj("node_tree_ztree");
+	if(action == "create") {
+		var parentNode = zTree.getNodeByParam("id", node_json.pId);
+		
+		if (node_json.node_type == 1) {
+			node_json.icon = "/module/ztree/css/img/diy/1_open.png";
+		} else if (node_json.node_type == 2) {
+			node_json.icon = "/module/ztree/css/img/diy/3.png";
+		}
+		
+		zTree.addNodes(parentNode, node_json);
+	} else if(action == "update") {
+		var updateNode = zTree.getNodeByParam("id", node_json.id);
+		updateNode.name = node_json.name;
+		updateNode.node_type = node_json.node_type
+
+		if (node_json.node_type == 1) {
+			updateNode.icon = "/module/ztree/css/img/diy/1_open.png";
+		} else if (node_json.node_type == 2) {
+			updateNode.icon = "/module/ztree/css/img/diy/3.png";
+		}
+		
+		zTree.updateNode(updateNode);
+	}
+}
+
+function new_admin_node_node_ajax(pId) {
+	$.get("/admin/nodes/"+pId+".json", {}, function(nodeData) {
+		if(nodeData.released != 1) {
+			alert("请先发布本栏目!");
+		} else {
+			location.href='<%= new_admin_node_path %>?pId=' + pId;
+		}
+	});
+	//$("#nodeTreeModalIframe").attr("src", "<%= new_admin_node_path %>?pId="+pId);
+	//$('#nodeTreeModal').modal('show');
+}
+
+function node_article_list(nodeId) {
+	$.get("/admin/nodes/"+nodeId+".json", {}, function(nodeData) {
+		if(nodeData.released != 1) {
+			alert("请先发布本栏目,再新增文章!");
+		} else {
+			location.href='<%= main_admin_articles_path %>?node_id=' + nodeId;
+		}
+	});
+}
+
+function destroy_node(nodeId, nodeName) {
+	if(confirm('确认删除：'+nodeName+'？')) {
+		$.deleteAjax('/admin/nodes/'+nodeId+'.json', {}, function(data) {
+			alert(data.msg);
+			if(data.status == 1) {
+				var zTree = $.fn.zTree.getZTreeObj("node_tree_ztree");
+				var selectedNode = zTree.getSelectedNodes()[0];
+				zTree.removeNode(selectedNode);
+			}
+		});
+	}
+}
+
+function released_node(nodeId, nodeName) {
+	if(confirm('确认发布：'+nodeName+'？')) {
+		$.post('<%= released_admin_nodes_path(:format => :json) %>', {"id" : nodeId}, function(data) {
+			if(data.status == 0) {
+				alert("栏目" + nodeName + "发布失败!");
+			} else {
+				var zTree = $.fn.zTree.getZTreeObj("node_tree_ztree");
+				var updateNode = zTree.getNodeByParam("id", nodeId);
+				updateNode.status = 2;
+				zTree.updateNode(updateNode);
+				alert("栏目" + nodeName + "发布成功!");
+			}
+		});
+	}
+}
+
+function released_articles_node(nodeId, nodeName) {
+	if(confirm('确认批量发布：'+nodeName+'下的文章？')) {
+		$.post('<%= released_articles_admin_nodes_path(:format => :json) %>', {"id" : nodeId}, function(data) {
+			if(data.status == 0) {
+				alert("栏目" + nodeName + "发布失败!");
+			} else {
+				alert("栏目" + nodeName + "发布成功!");
+			}
+		});
+	}
+}
+
+function expandNode(zTree, nodes, type) {
+	if (type == "expandAll") {
+		zTree.expandAll(true);
+	} else if (type == "collapseAll") {
+		zTree.expandAll(false);
+	} else {
+		var callbackFlag = $("#callbackTrigger").attr("checked");
+		for (var i=0, l=nodes.length; i<l; i++) {
+			zTree.setting.view.fontCss = {};
+			if (type == "expand") {
+				zTree.expandNode(nodes[i], true, null, null, callbackFlag);
+			} else if (type == "collapse") {
+				zTree.expandNode(nodes[i], false, null, null, callbackFlag);
+			} else if (type == "toggle") {
+				zTree.expandNode(nodes[i], null, null, null, callbackFlag);
+			} else if (type == "expandSon") {
+				zTree.expandNode(nodes[i], true, true, null, callbackFlag);
+			} else if (type == "collapseSon") {
+				zTree.expandNode(nodes[i], false, true, null, callbackFlag);
+			}
+		}
+	}
+}
+
+$(document).ready(function(){
+	$.get('<%= admin_nodes_path %>.json',{},function(zNodes) {
+		for(var i=0,len=zNodes.length;i<len;i++) {
+			var node = zNodes[i]
+			node.name = node.name + " ID: " + node.id;
+			if (node.node_type == 1) {
+				node.icon = "/module/ztree/css/img/diy/1_open.png";
+			} else if (node.node_type == 2) {
+				node.icon = "/module/ztree/css/img/diy/3.png";
+			}
+		}
+		$.fn.zTree.init($("#node_tree_ztree"), setting, zNodes);
+	});
+	
+	$("#node_name").select2({
+	    placeholder: "请选择栏目",
+	    minimumInputLength: 3,
+	    ajax: {
+	        url: "<%= admin_nodes_path(:format => :json, :json_type => "all") %>",
+	        dataType: 'json',
+	        quietMillis: 100,
+	        data: function (term, page) {
+	            return {
+	                q: term,
+	                page_limit: 10,
+	                page: page
+	            };
+	        },
+	        results: function (data, page) {
+	            return {results: data, more: false};
+	        }
+	    },
+	    formatResult: function(node) {return node.name},
+	    formatSelection: function(node) {
+			var zTree = $.fn.zTree.getZTreeObj("node_tree_ztree");
+			if(node.ancestry != undefined) {
+				var node_ids = node.ancestry.split("\/");
+				for(var i=0,len=node_ids.length;i<len;i++) {
+					var node = zTree.getNodeByParam("id", node_ids[i]);
+					zTree.expandNode(node, true, null, null, false);
+				}
+				
+			}
+			var node = zTree.getNodeByParam("id", node.id);
+			zTree.expandNode(node, true, null, null, false);
+			return node.name;
+		},
+	    dropdownCssClass: "bigdrop",
+	    escapeMarkup: function (m) { return m; }
+	});
+});
+//-->
+</script>	
+<% end -%>
+

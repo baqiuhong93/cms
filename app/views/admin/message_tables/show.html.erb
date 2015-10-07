@@ -1,0 +1,41 @@
+<%= render :partial => '/admin/public/actions' %>
+<table class="table table-bordered">
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>名称:</strong></td>
+	<td><%= @message_table.name %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>简介:</strong></td>
+	<td><%= @message_table.description %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>英文名:</strong></td>
+	<td><%= @message_table.table_name %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>开始时间:</strong></td>
+	<td><%= @message_table.start_at %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>结束时间:</strong></td>
+	<td><%= @message_table.end_at %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>登录?:</strong></td>
+	<td><%= @message_table.logined_text %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>用户名:</strong></td>
+	<td><%= @message_table.user_name %></td>
+</tr>
+</table>
+<span id="<%= @message_table.table_name %>_<%= @message_table.id %>">
+	<%= @message_table.message_table_form %>
+</span>
+<%= content_for :javascripts do -%>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+	$("#<%= @message_table.table_name %>_<%= @message_table.id %>").html($("#<%= @message_table.table_name %>_<%= @message_table.id %>").html().replace(/&lt;br&gt;/g,"<br>"));
+});
+</script>	
+<% end -%>

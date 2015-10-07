@@ -1,0 +1,74 @@
+<%= form_for @friend_link, :url => (@friend_link.id.present? ? admin_friend_link_path(@friend_link) : admin_friend_links_path), :html => { :class => 'form-horizontal', :onsubmit => "return valid_friend_link_form()" } do |f| %>
+<%= f.hidden_field :type_ids %>
+<div class="control-group">
+	<%= f.label :name, "*名称:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :name, :maxlength => 255 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :description, "简介:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :description, :maxlength => 255 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :addr, "*网址:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :addr, :maxlength => 255 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :img_path, "图片:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.file_field :img_path %>
+	</div>
+</div>
+<div class="control-group">
+	<%= label_tag :type_id, "范围:", :class => "control-label" %>
+	<div class="controls">
+		<% GlobalSettings.friend_link_types.each do |type| %>
+		<input type="checkbox" value="<%= type[0] %>" id="type_id"> <%= type[1] %>
+		<% end %>
+	</div>
+</div>
+
+<div class="control-group">
+	<%= f.label :sortrank, "排序:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.select :sortrank, 1..99 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :status, "状态:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.select :status, [["有效",1], ["无效",0]], :prompt => "请选择"  %>
+	</div>
+</div>
+    <div class="form-actions">
+    <%= f.button :submit, :class => 'btn btn-primary' %>
+    <%= link_to '取消', query_url(admin_friend_links_path, FriendLink, @current_user.uid), :class => 'btn' %>
+  </div>
+<% end -%>
+<%= content_for :javascripts do -%>
+<script type="text/javascript" charset="utf-8">
+function valid_friend_link_form() {
+	var checked_type_ids = [];
+	$("input[id=type_id]").each(function() {
+		if(this.checked) {
+			checked_type_ids.push(parseInt(this.value));	
+		}
+	});
+	$("#friend_link_type_ids").val(JSON.stringify(checked_type_ids));
+	return true;
+}
+$(function() {
+	var json_type_ids = <%= @friend_link.type_ids.nil? ? [] : @friend_link.type_ids.html_safe %>;
+	$("input[id=type_id]").each(function() {
+		if(json_type_ids.indexOf(this.value) != -1) {
+			$(this).prop("checked", true);
+		}	
+	});	
+});
+</script>
+<% end -%> 

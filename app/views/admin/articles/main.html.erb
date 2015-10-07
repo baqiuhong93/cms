@@ -1,0 +1,370 @@
+<div class="row-fluid">
+	<div class="span3 bgcolor">
+		<table border="0" cellspacing="5" cellpadding="5">
+			<tr><td><input type="text" id="search_node_id" value="<%= params[:node_id] %>" placeholder="请输入栏目ID"></td></tr>
+			<tr><td><input type="text" id="search_node_name" value="<%= params[:node_name] %>" placeholder="请输入栏目名称"></td></tr>
+			<tr><td><input type="button" class="btn btn-primary" onclick="do_search_node()" value="查询"></td></tr>
+		</table>
+		<ul id="node_tree_ztree" class="ztree">
+		</ul>
+	</div>
+	<div class="span9 bgcolor">
+		<iframe src="<%= admin_articles_path %>" scrolling="no" frameborder="0" id="articles_iframe" name="articles_iframe" width="100%" height="100%" onload="dyniframesize('articles_iframe')"></iframe>
+	</div>
+</div>
+
+<div id="rMenu">
+	<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+		<% if can? :view, :node %>
+		<li class="divider"></li>
+		<li id="node_preview" onclick="previewNode();">预览</li>
+		<% end %>
+		<% if can? :new, :node %>
+		<li class="divider"></li>
+		<li id="node_new" onclick="newNode();">增加</li>
+		<% end %>
+		<% if can? :edit, :node %>
+		<li class="divider"></li>
+		<li id="node_edit" onclick="editNode();">修改</li>
+		<% end %>
+		<% if can? :show, :node %>
+		<li class="divider"></li>
+		<li id="node_show" onclick="showNode();">详情</li>
+		<% end %>
+		<% if can? :destroy, :node %>
+		<li class="divider"></li>
+		<li id="node_destroy" onclick="destroyNode();">删除</li>
+		<% end %>
+		<% if can? :main, :article %>
+		<li class="divider"></li>
+		<li id="node_article" onclick="nodeArticle();">文章</li>
+		<% end %>
+		<% if can? :down, :node %>
+		<li class="divider"></li>
+		<li id="node_down" onclick="nodeDown();">下载</li>
+		<% end %>
+		<% if can? :released, :node %>
+		<li class="divider"></li>
+		<li id="node_released" onclick="nodeReleased();">发布</li>
+		<% end %>
+		<% if can? :released_articles, :node %>
+		<li class="divider"></li>
+		<li id="node_released_articles" onclick="nodeReleasedArticles();">发布文章</li>
+		<% end %>
+	</ul>
+</div>
+
+<%= content_for :stylesheets do -%>
+<link rel="stylesheet" href="/module/ztree/css/zTreeStyle.css" type="text/css" charset="utf-8">
+<style type="text/css">
+.ztree li span.button.add{margin:0; background: url(/module/ztree/css/img/diy/add.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.pIcon01_ico_open{margin-right:2px; background: url(/module/ztree/css/img/diy/1_open.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.pIcon01_ico_close{margin-right:2px; background: url(/module/ztree/css/img/diy/1_close.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.icon01_ico_docu{margin-right:2px; background: url(/module/ztree/css/img/diy/3.png) no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+
+div#rMenu {position:absolute; visibility:hidden; top:0; text-align: left;padding: 2px;}
+div#rMenu ul li{
+	margin: 1px 0;
+	padding: 0 5px;
+	cursor: pointer;
+	list-style: none outside none;
+}
+
+</style>
+<% end -%>
+
+<%= content_for :javascripts do -%>
+<script type="text/javascript" charset="utf-8" src="/module/ztree/js/jquery.ztree.core-3.5.js"></script>
+<script type="text/javascript" charset="utf-8" src="/module/ztree/js/jquery.ztree.excheck-3.5.js"></script>
+<script type="text/javascript" charset="utf-8" src="/module/ztree/js/jquery.ztree.exedit-3.5.js"></script>
+<script type="text/javascript" charset="utf-8">
+var zTree, rMenu;
+var setting = {
+	data: {
+		simpleData: {
+			enable: true
+		}
+	},
+	view: {
+		fontCss: getFontCss
+	},
+	callback: {
+		onRightClick: OnRightClick
+	}
+};
+
+function OnRightClick(event, treeId, treeNode) {
+	if (!treeNode && event.target.tagName.toLowerCase() != "button" && $(event.target).parents("a").length == 0) {
+		zTree.cancelSelectedNode();
+		showRMenu("root", event.clientX, event.clientY);
+	} else if (treeNode && !treeNode.noR) {
+		zTree.selectNode(treeNode);
+		showRMenu("node", event.clientX, event.clientY);
+	}
+}
+
+function showRMenu(type, x, y) {
+	if($("#rMenu ul li").eq(0).text() == '') {
+		$("#rMenu ul li").eq(0).remove();	
+	}
+	$("#rMenu ul").show();
+	if (type=="root") {
+		$("#rMenu ul li").each(function() {
+			if(this.id != "node_new") {
+				$(this).hide();		
+			}
+		});
+	} else {
+		var treeNode = zTree.getSelectedNodes()[0];
+		
+		$("#rMenu ul li").each(function() {
+			if(treeNode.temp_node_id && this.id == "node_down") {
+				$(this).prev().hide();
+				$(this).hide();
+			} else if(treeNode.status == 2 && this.id == "node_released") {
+				$(this).prev().hide();
+				$(this).hide();
+			} else if(treeNode.node_type == 1 && this.id == "node_released_articles") {
+				$(this).prev().hide();
+				$(this).hide();
+			} else {
+				$(this).show();		
+			}
+		});
+	}
+	rMenu.css({"top":y+"px", "left":x+"px", "visibility":"visible"});
+
+	$("body").bind("mousedown", onBodyMouseDown);
+}
+
+function hideRMenu() {
+	if (rMenu) rMenu.css({"visibility": "hidden"});
+	$("body").unbind("mousedown", onBodyMouseDown);
+}
+function onBodyMouseDown(event){
+	if (!(event.target.id == "rMenu" || $(event.target).parents("#rMenu").length>0)) {
+		rMenu.css({"visibility" : "hidden"});
+	}
+}
+
+function previewNode() {
+	var treeNode = zTree.getSelectedNodes()[0];
+	hideRMenu();
+	if (treeNode) {
+		window.open("/admin/nodes/"+treeNode.id+"/view", "preview_node");
+	}
+}
+
+function newNode() {
+	var treeNode = zTree.getSelectedNodes()[0];
+	hideRMenu();
+	if (treeNode) {
+		$.get("/admin/nodes/"+treeNode.id+".json", {}, function(nodeData) {
+			if(nodeData.released != 1) {
+				alert("请先发布本栏目!");
+			} else {
+				window.open("<%= new_admin_node_path %>?pId=" + treeNode.id, "articles_iframe");
+			}
+		});
+	} else {
+		window.open("<%= new_admin_node_path %>?pId=0", "articles_iframe");
+	}
+}
+
+function editNode() {
+	var treeNode = zTree.getSelectedNodes()[0];
+	hideRMenu();
+	if (treeNode) {
+		window.open("/admin/nodes/"+treeNode.id+"/edit", "articles_iframe");
+	}
+}
+
+function addNode(node) {
+	var _node = zTree.getNodeByParam("id", node.id);
+	if(!_node) {
+		node.name = node.name + " ID: " + node.id;
+		if (node.node_type == 1) {
+			node.icon = "/module/ztree/css/img/diy/1_open.png";
+		} else if (node.node_type == 2) {
+			node.icon = "/module/ztree/css/img/diy/3.png";
+		}
+		node.url = "/admin/articles?search[ancestry_contains]=" + node.id;
+		node.target = "articles_iframe";
+		
+		if (node.pId == 0) {
+			zTree.addNodes(null, node);
+		} else {
+			var _pnode = zTree.getNodeByParam("id", node.pId);
+			if(_pnode) {
+				zTree.addNodes(_pnode, node);	
+			}
+		}
+	}
+}
+
+function showNode() {
+	var treeNode = zTree.getSelectedNodes()[0];
+	hideRMenu();
+	if (treeNode) {
+		window.open("/admin/nodes/"+treeNode.id, "articles_iframe");
+	}
+}
+
+function destroyNode() {
+	hideRMenu();
+	var treeNode = zTree.getSelectedNodes()[0];
+	if(treeNode) {
+		if(confirm('确认删除：'+treeNode.name+'？')) {
+			$.deleteAjax('/admin/nodes/'+treeNode.id+'.json', {}, function(data) {
+				alert(data.msg);
+				if(data.status == 1) {
+					zTree.removeNode(treeNode);
+				}
+			});
+		}	
+	}
+}
+
+function nodeArticle() {
+	var treeNode = zTree.getSelectedNodes()[0];
+	hideRMenu();
+	if (treeNode) {
+		window.open("/admin/articles?search[ancestry_contains]=" + treeNode.id, "articles_iframe");
+	}
+}
+
+function nodeDown() {
+	var treeNode = zTree.getSelectedNodes()[0];
+	hideRMenu();
+	if (treeNode) {
+		location.href = "/admin/nodes/"+treeNode.id+"/down";
+	}
+}
+
+function nodeReleased() {
+	hideRMenu();
+	var treeNode = zTree.getSelectedNodes()[0];
+	if(treeNode) {
+		if(confirm('确认发布：'+treeNode.name+'？')) {
+			$.post('<%= released_admin_nodes_path(:format => :json) %>', {"id" : treeNode.id}, function(data) {
+				if(data.status == 0) {
+					alert("栏目" + nodeName + "发布失败!");
+				} else {
+					var updateNode = zTree.getNodeByParam("id", nodeId);
+					updateNode.status = 2;
+					zTree.updateNode(updateNode);
+					alert("栏目" + nodeName + "发布成功!");
+				}
+			});
+		}	
+	}
+}
+
+function updateNodeReleased(nodeId) {
+	var updateNode = zTree.getNodeByParam("id", nodeId);
+	updateNode.status = 2;
+	zTree.updateNode(updateNode);
+}
+
+function nodeReleasedArticles() {
+	hideRMenu();
+	var treeNode = zTree.getSelectedNodes()[0];
+	if(treeNode) {
+		if(confirm('确认批量发布：'+treeNode.name+'下的文章？')) {
+			$.post('<%= released_articles_admin_nodes_path(:format => :json) %>', {"id" : treeNode.id}, function(data) {
+				if(data.status == 0) {
+					alert("栏目" + treeNode.name + "发布失败!");
+				} else {
+					alert("栏目" + treeNode.name + "发布成功!");
+				}
+			});
+		}	
+	}
+}
+
+$("#search_node_name").select2({
+    placeholder: "请选择栏目",
+    minimumInputLength: 2,
+    ajax: {
+        url: "<%= admin_nodes_path(:format => :json, :json_type => "all") %>",
+        dataType: 'json',
+        quietMillis: 100,
+        data: function (term, page) {
+            return {
+                q: term,
+                page_limit: 10,
+                page: page
+            };
+        },
+        results: function (data, page) {
+            return {results: data, more: false};
+        }
+    },
+    formatResult: function(node) {return node.name},
+    formatSelection: function(node) {return node.name;},
+    dropdownCssClass: "bigdrop",
+    escapeMarkup: function (m) { return m; }
+});
+
+function getFontCss(treeId, treeNode) {
+	return (!!treeNode.highlight) ? {color:"#A60000", "font-weight":"bold"} : {color:"#333", "font-weight":"normal"};
+}
+
+function do_search_node() {
+	var _node_id_val = $("#search_node_id").val();
+	var _node_name_val = $("#search_node_name").val();
+	if (_node_id_val == '' && _node_name_val == '') {
+		alert("请输入栏目ID或者栏目名称!");
+		return;
+	}
+	
+	if (_node_id_val != '') {
+		var zTreeObj = zTree.getNodeByParam("id", $("#search_node_id").val());
+		zTreeObj.highlight = true;
+		zTree.updateNode(zTreeObj);
+		$("#articles_iframe").prop("src", zTreeObj.url);
+		while (!!zTreeObj && zTreeObj.pId != 0) {
+			zTreeObj = zTree.getNodeByParam("id", zTreeObj.pId);
+			zTree.expandNode(zTreeObj, true, false, true);
+		}
+		
+	}
+	if (_node_name_val != '') {
+		var node = $("#search_node_name").select2("data");
+		if(!!node && node.ancestry != undefined) {
+			var node_ids = node.ancestry.split("\/");
+			for(var i=0,len=node_ids.length;i<len;i++) {
+				var node = zTree.getNodeByParam("id", node_ids[i]);
+				zTree.expandNode(node, true, null, null, false);
+			}
+			var zTreeObj = zTree.getNodeByParam("id", node.id);
+			zTreeObj.highlight = true;
+			zTree.updateNode(zTreeObj);
+			$("#articles_iframe").prop("src", zTreeObj.url);
+		}
+	}
+}
+
+$(function() {
+	$.get('<%= admin_nodes_path %>.json',{},function(zNodes) {
+		for(var i=0,len=zNodes.length;i<len;i++) {
+			var node = zNodes[i]
+			node.name = node.name + " ID: " + node.id;
+			if (node.node_type == 1) {
+				node.icon = "/module/ztree/css/img/diy/1_open.png";
+			} else if (node.node_type == 2) {
+				node.icon = "/module/ztree/css/img/diy/3.png";
+			}
+			node.url = "/admin/articles?search[ancestry_contains]=" + node.id;
+			node.target = "articles_iframe";
+		}
+		$.fn.zTree.init($("#node_tree_ztree"), setting, zNodes);
+		zTree = $.fn.zTree.getZTreeObj("node_tree_ztree");
+		rMenu = $("#rMenu");
+		<% if !params[:node_id].nil? || !params[:node_name].nil? %>
+		do_search_node();
+		<% end %>
+	});	
+});
+</script>	
+<% end -%>

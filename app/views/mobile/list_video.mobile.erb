@@ -1,0 +1,33 @@
+<div class="newstop">
+        <a href="http://m.xredu.com/"></a>
+        <p>
+           <%=@node.name %>
+        </p>
+        <div class="clear">
+        </div>
+    </div>
+  
+    <h3 class="news_map">
+       <a href="http://m.xredu.com">首页</a>>
+        <a href="<%=@node.parent.mobile_huizong_url %>"><%=@node.parent.name %></a>>
+         <%=@node.name %>
+    </h3>
+      <div class="hp_news_list3">
+        <ul>
+            <% @articles.order("commend DESC, id DESC").each do |article| %>
+            <li><a href="<%=article.html_page_first_url %>">
+                <div class="hp_news_list3_itemleft">
+                    <p>
+                        <%=(article.title.length > 15 ? article.title[0...15] : article.title) %>
+                    </p>
+                    <span><%=article.click %>&nbsp;&nbsp;<%=article.created_at.strftime("%Y-%m-%d") %></span>
+                </div>
+                <img alt="" src="<%=file_url(article.img_path) %>" /><div class="clear"></div>
+            </a></li>
+            <% end %>
+            <div class="clear"></div>
+        </ul>
+    </div>
+    <%= will_paginate @articles, :class => "news_page", :renderer => BootstrapPagination::Rails %>
+    
+ <%= Fragment.find(589).content.html_safe %>

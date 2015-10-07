@@ -1,0 +1,106 @@
+<table class="table table-bordered">
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>ID:</strong></td>
+		<td><%= @node.id %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>名称:</strong></td>
+		<td><%= @node.name %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>显示名称:</strong></td>
+		<td><%= @node.show_name %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>父栏目:</strong></td>
+		<td><%= @node.pId > 0 ? (link_to Node.find(@node.pId).name, admin_node_path(:id => @node.pId)) : "根节点" %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>编码:</strong></td>
+		<td><%= @node.unique_code %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>简介:</strong></td>
+		<td><%= @node.description %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>节点类型:</strong></td>
+		<td><%= Node.node_type_hash[@node.node_type] %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>预览地址:</strong></td>
+		<td><%= link_to @node.name, view_admin_node_path(@node), :target => "node_view"  %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>访问地址:</strong></td>
+		<td>
+			<%= link_to @node.name, @node.html_url, :target => "node_view"  %>  
+			<%= @node.html_url.gsub("index.html", "") %>
+		</td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>文章路径:</strong></td>
+		<td><%= @node.article_url %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>文章排序:</strong></td>
+		<td><%= Node.list_order_hash[@node.list_order_id] %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>每页文章条数:</strong></td>
+		<td><%= @node.per_page_size %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>导航:</strong></td>
+		<td><%= @node.nav_text %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>排序:</strong></td>
+		<td><%= @node.sortrank %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>点击数:</strong></td>
+		<td><%= @node.click %></td>
+	</tr>
+	<% if !@node.temp_node.nil? %>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>栏目模板:</strong></td>
+		<td><%= @node.temp_node.name %></td>
+	</tr>
+	<% end %>
+	<% if !@node.temp_article.nil? %>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>文章模板:</strong></td>
+		<td><%= @node.temp_article.name %></td>
+	</tr>
+	<% end %>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>状态:</strong></td>
+		<td><%= @node.status_text %></td>
+	</tr>
+	<% if @node.status == 1 %>
+	<tr>
+		<td colspan="2" style="text-align:center;"><%= button_tag "发布", :onclick => "released_node()", :class => 'btn btn-primary' %></td>
+	</tr>
+	<% end %>
+</table>
+
+<%= content_for :javascripts do -%>
+<script type="text/javascript" charset="utf-8">
+function released_node() {
+	if(confirm('确认发布：<%= @node.name %>？')) {
+		$.post('<%= released_admin_nodes_path(:format => :json) %>', {"id" : <%= @node.id %>}, function(data) {
+			if(data.status == 0) {
+				alert("栏目<%= @node.name %>发布失败!");
+			} else {
+				window.parent.updateNodeReleased(<%= @node.id %>);
+				alert("栏目<%= @node.name %>发布成功!");
+			}
+		});
+	}
+}
+$(function() {
+	window.parent.addNode(<%= @node.to_json.html_safe %>);	
+});
+</script>
+<% end -%>

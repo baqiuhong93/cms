@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Worksheet ss:Name="Sheet1">
+    <Table>
+      <Row>
+        <Cell><Data ss:Type="String">用户ID</Data></Cell>
+        <Cell><Data ss:Type="String">用户名</Data></Cell>
+        <Cell><Data ss:Type="String">IP</Data></Cell>
+        <Cell><Data ss:Type="String">创建日期</Data></Cell>
+		<% @message_table.message_columns.each do |message_column| %>
+			<% if message_column.show_index %>
+            	<Cell><Data ss:Type="String"><%= message_column.name %></Data></Cell>
+			<% end %>
+		<% end %>
+      </Row>
+	  <% @message_texts.each do |message_text| %>
+	  <Row>
+		  <Cell><Data ss:Type="Number"><%= message_text.user_id %></Data></Cell>
+		  <Cell><Data ss:Type="String"><%= message_text.user_name %></Data></Cell>
+		  <Cell><Data ss:Type="String"><%= message_text.ip %></Data></Cell>
+		  <Cell><Data ss:Type="String"><%= format_date(message_text.created_at) %></Data></Cell>
+		<% @message_table.message_columns.each do |message_column| %>
+			<% if message_column.show_index %>
+				<% if message_column.json_value_hash.empty? %>
+					<Cell><Data ss:Type="String"><%= message_text.text[message_column.column_name] %></Data></Cell>
+				<% else %>
+					<% if message_text.text[message_column.column_name].kind_of?(Array) %>
+						<Cell><Data ss:Type="String"><% message_text.text[message_column.column_name].each do |md| %><%= message_column.json_value_hash[md] %> <% end %></Data></Cell>
+					<% else %>
+						<Cell><Data ss:Type="String"><%= message_column.json_value_hash[message_text.text[message_column.column_name]] %></Data></Cell>
+					<% end %>
+				<% end %>
+			<% end %>
+		<% end %>
+	</Row>
+	<% end %>
+    </Table>
+  </Worksheet>
+</Workbook>

@@ -1,0 +1,49 @@
+defaults: &defaults
+  per_page: 30
+  article_per_page_size: 30
+  article_sortrank: 10
+  site_name: 资讯平台
+  upload_path: /Workspaces/secondDomain
+  upload_view_url: http://localhost:3001
+  upload_file_size: 5120000
+  image_types: ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png']
+  jsp_upload_path: /Users/flask/WebProjects/nj
+  
+  cms_local_url: http://localhost:8080
+  html_path: /Workspaces/secondDomain
+  
+  security_host: localhost
+  security_port: 3002
+  
+  cookie_domain: localhost
+  
+  article: {'171' : {'width' : 171, 'height' : 155}, '215' : {'width' : 215, 'height' : 19}, '425' : {'width' : 425, 'height' : 385}}
+  
+  friend_link_types: [[1,"首页"], [2,"频道页"], [3,"列表页"], [4,"文章页"]]
+  
+  varnish_cache: false
+  varnish_cache_url_key: urlkey
+  varnish_cache_directory_key: directorykey
+  js_domain: http://asset.xredu.com/
+  css_domain: http://asset.xredu.com/
+  image_domain: http://asset.xredu.com/
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
+  upload_path: /apps/file_upload
+  upload_view_url: http://fjdown.xredu.com
+  cookie_domain: xredu.com
+  jsp_upload_path: /apps/cmsFront
+  html_path: /apps/domains
+  security_host: security.xredu.com
+  security_port: 80
+  cms_domain: http://cms.xredu.com
+  js_domain: http://asset.xredu.com/
+  css_domain: http://asset.xredu.com/
+  image_domain: http://asset.xredu.com/

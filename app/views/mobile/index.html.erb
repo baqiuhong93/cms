@@ -1,0 +1,109 @@
+<div class="toplogo">
+        <a href="http://m.xredu.com" class="logoa">
+            <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/logo.png" />
+        </a><a href="tel:4006202002" onclick="ga('send','event','tel','tel-index','tel-400');" class="logotel">4006202002 </a>
+        <br />
+</div>
+    <a href="http://product.xredu.com/products?utf8=%E2%9C%93&search%5Bexam_type_id_eq%5D=&search%5Bexam_level_id_contains%5D=&search%5Btype_id_eq%5D=3&search%5Bskxx_id_eq%5D=" class="hp_botad">
+        <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/b1.gif" />
+    </a>
+
+    <div class="home_bigtools">
+        <ul>
+            <li class="home_bigtools_li1"><a href="http://m.xredu.com/mobile/huizong/3362" style="border-left: none;">
+                <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/tools1.png" />考试资讯 </a></li>
+            <li class="home_bigtools_li2"><a href="http://m.xredu.com/mobile/huizong/3366">
+                <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/tools2.png" />备考资料 </a></li>
+            <li class="home_bigtools_li3"><a href="http://m.xredu.com/mobile/huizong/2143">
+                <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/tools5.png" />免费视频 </a></li>
+            <li class="home_bigtools_li4"><a href="http://product.xredu.com/">
+                <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/tools8.png" />报班购书 </a></li>
+            <div class="clear">
+            </div>
+        </ul>
+        <ul>
+            <li class="home_bigtools_li1"><a href="http://product.xredu.com/products?utf8=%E2%9C%93&search%5Bexam_type_id_eq%5D=&search%5Bexam_level_id_contains%5D=%2C1%2C&search%5Btype_id_eq%5D=&search%5Bskxx_id_eq%5D=" style="border-left: none;">
+                <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/tools3.png" />中 学 </a></li>
+            <li class="home_bigtools_li2"><a href="http://product.xredu.com/products?utf8=%E2%9C%93&search%5Bexam_type_id_eq%5D=&search%5Bexam_level_id_contains%5D=%2C2%2C&search%5Btype_id_eq%5D=&search%5Bskxx_id_eq%5D=">
+                <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/tools4.png" />小 学 </a></li>
+            <li class="home_bigtools_li3"><a href="http://product.xredu.com/products?utf8=%E2%9C%93&search%5Bexam_type_id_eq%5D=&search%5Bexam_level_id_contains%5D=%2C3%2C&search%5Btype_id_eq%5D=&search%5Bskxx_id_eq%5D=">
+                <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/tools6.png" />幼儿园 </a></li>
+            <li class="home_bigtools_li4"><a href="http://fir.im/xredu">
+                <img alt="" src="<%=GlobalSettings.image_domain %>mobTheme/images/tools7.png" />题库APP </a></li>
+            <div class="clear">
+            </div>
+        </ul>
+    </div>
+    <h3 class="hp_grh3">
+        <span>考试资讯</span> <a href="<%=Node.find(3362).mobile_huizong_url %>">更多</a>
+        <div class="clear">
+        </div>
+    </h3>
+    <div class="hp_news_list1">
+        <ul>
+            <% @kaoshizixuns.each do |article| %>
+            <li><a href="<%=article.html_page_first_url %>" class="<%=article.commend ? 'hp_news_list1_jian' : 'hp_news_list1_xin' %>"><%=article.title %></a> <span>
+                <%=article.click %></span><div class="clear">
+                </div>
+            </li>
+            <% end %>
+        </ul>
+    </div>
+    <h3 class="hp_grh3">
+        <span>备考资料</span> <a href="<%=Node.find(3366).mobile_huizong_url %>">更多</a>
+        <div class="clear">
+        </div>
+    </h3>
+    <div class="hp_news_list1">
+        <ul>
+            <% @beikaoziliaos.each do |article| %>
+            <li><a href="<%=article.html_page_first_url %>" class="<%=article.commend ? 'hp_news_list1_jian' : 'hp_news_list1_xin' %>"><%=article.title %></a> <span>
+                <%=article.click %></span><div class="clear">
+                </div>
+            </li>
+            <% end %>
+        </ul>
+    </div>
+    <a href="http://product.xredu.com/" class="hp_botad">
+        <img alt="热门活动" src="<%=GlobalSettings.image_domain %>mobTheme/images/hp_ad4.gif" />
+    </a>
+    <h3 class="hp_grh3">
+        <span>免费视频</span> <a href="<%=Node.find(2143).mobile_huizong_url %>">更多</a>
+        <div class="clear">
+        </div>
+    </h3>
+    <div class="hp_news_list3">
+        <ul>
+            <% @mianfeishipins.each do |article| %>
+             <li><a href="<%=article.html_page_first_url %>">
+                <div class="<%=article.commend ? 'hp_news_list3_itemleft videojian' : 'hp_news_list3_itemleft videoxin' %>">
+                    <p>
+                        <%=article.title %>
+                    </p>
+                    <span><%=article.click %>&nbsp;&nbsp;<%=article.created_at.strftime("%Y-%m-%d") %></span>
+                </div>
+                <img alt="" src="<%=file_url(article.img_path) %>" /><div class="clear"></div>
+            </a></li>
+            <% end %>
+            <div class="clear"></div>
+        </ul>
+    </div>
+    <div class="hp_footerbig">
+        <ul>
+            <li class="noling"><a href="#">资格资讯</a> </li>
+            <li><a href="#">资格笔试</a> </li>
+            <li><a href="#">编制资讯</a> </li>
+            <li><a href="#">编制笔试</a> </li>
+            <li class="noling"><a href="#">资格备考</a> </li>
+            <li><a href="#">资格面试</a> </li>
+            <li><a href="#">编制备考</a> </li>
+            <li><a href="#">编制面试</a> </li>
+            <li class="noling"><a href="#">资格视频</a> </li>
+            <li><a href="#">资格保过</a> </li>
+            <li><a href="#">编制视频</a> </li>
+            <li><a href="#">编制保过</a> </li>
+            <div class="clear">
+            </div>
+        </ul>
+    </div>
+ <%= Fragment.find(589).content.html_safe %>

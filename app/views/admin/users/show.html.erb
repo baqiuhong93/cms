@@ -1,0 +1,24 @@
+<%= render :partial => '/admin/public/actions' %>
+<table class="table table-bordered">
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>ID:</strong></td>
+		<td><%= @user.uid %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>用户名：</strong></td>
+		<td><%= @user.name %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>Email：</strong></td>
+		<td><%= @user.email %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>今日发布文章：</strong></td>
+		<td><%= @user.today_article_count %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>总计发布文章：</strong></td>
+		<td><%= @user.total_article_count %></td>
+	</tr>
+</table>
+

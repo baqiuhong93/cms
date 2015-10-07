@@ -1,0 +1,85 @@
+<%= render :partial => '/admin/public/actions' %>
+<table class="table table-bordered">
+		<tr>
+			<td width="15%" style="text-align:right;"><strong>栏目:</strong></td>
+			<td><%= @article.node.nil? ? "" : @article.node.name %></td>
+		</tr>
+		<tr>
+			<td width="15%" style="text-align:right;"><strong>副栏目:</strong></td>
+			<td><%= eval(@article.sub_node_string.gsub(":","=>")).collect {|sc| sc['name'] }.join(", ") %></td>
+		</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>标题:</strong></td>
+		<td><%= @article.title %></td>
+		</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>副标题:</strong></td>
+		<td><%= @article.sub_title %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>短标题:</strong></td>
+		<td><%= @article.short_title %></td>
+	</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>摘要:</strong></td>
+	<td><%= @article.description %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>推荐:</strong></td>
+	<td><%= @article.commend_text %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>附图:</strong></td>
+	<td><%= link_to "查看", file_url(@article.img_path), :target => "img_win" %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>作者:</strong></td>
+	<td><%= @article.writer %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>来源:</strong></td>
+	<td><%= @article.origin.nil? ? "" : @article.origin.name %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>创建时间:</strong></td>
+	<td><%= format_date(@article.created_at) %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>修改时间:</strong></td>
+	<td><%= format_date(@article.updated_at) %></td>
+</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>发布时间:</strong></td>
+	<td><%= format_date(@article.released_at) %></td>
+</tr>
+		<tr>
+			<td width="15%" style="text-align:right;"><strong>排序:</strong></td>
+			<td><%= @article.sortrank %></td>
+		</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>点击数:</strong></td>
+		<td><%= @article.click %></td>
+	</tr>
+		
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>Url:</strong></td>
+		<td><%= @article.html_page_no_url.gsub('#pageNo', '1') %></td>
+	</tr>
+		
+		
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>发布:</strong></td>
+		<td><%= @article.released %></td>
+	</tr>
+		
+		
+		
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>状态:</strong></td>
+		<td><%= @article.status_text %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>用户名:</strong></td>
+		<td><%= @article.user_name %></td>
+	</tr>
+	</table>

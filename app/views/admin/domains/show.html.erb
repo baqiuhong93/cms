@@ -1,0 +1,19 @@
+<%= render :partial => '/admin/public/actions' %>
+<table class="table table-bordered">
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>名称:</strong></td>
+		<td><%= @domain.name %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>地址:</strong></td>
+		<td><%= @domain.addr %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>创建时间:</strong></td>
+		<td><%= format_date(@domain.created_at) %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>修改时间:</strong></td>
+		<td><%= format_date(@domain.updated_at) %></td>
+	</tr>
+	</table>

@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>欣瑞教育</title>
+    <%= csrf_meta_tags %>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"
+        name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta content="email=no" name="format-detection" />
+    <link rel="Stylesheet" type="text/css" href="<%= GlobalSettings.css_domain %>mobTheme/StyleSheet.css" />
+
+    <script type="text/javascript" src="<%= GlobalSettings.js_domain %>js/jquery-1.7.1.min.js"></script>
+     <script type="text/javascript">
+         $(document).ready(function () {		 
+             $("#stafooter_toolsa").click(function () {
+                 $(".jumpdiv").slideToggle("fast", function () {
+                     if ($(".jumpdiv").is(":visible")) {
+                         $("#stafooter_toolsa").html("收起");
+                     }
+                     else {
+                         $("#stafooter_toolsa").html("更多");
+
+                     }
+                 });
+
+
+             });
+			 var vht = ($(document).width() / 16) * 9;
+            $(".news_video").css("height", vht);
+            $(".news_video").children("video").css("width", $(document).width());
+            $(".news_video").children("video").css("height", vht);
+         });
+      
+    </script>
+
+
+
+</head>
+<body>
+<%= yield %>
+<%= yield :javascripts %>
+</body>
+</html>

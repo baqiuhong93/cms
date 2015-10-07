@@ -1,0 +1,31 @@
+<%= render :partial => '/admin/public/actions' %>
+<table class="table table-bordered">
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>名称:</strong></td>
+		<td><%= @fragment.title %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>编码:</strong></td>
+		<td><%= @fragment.unique_code %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>类型:</strong></td>
+		<td><%= Fragment.type_hash[@fragment.type_id] %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>内容:</strong></td>
+		<td><%= @fragment.content %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>用户名:</strong></td>
+		<td><%= @fragment.user_name %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>创建时间:</strong></td>
+		<td><%= format_date(@fragment.created_at) %></td>
+	</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>修改时间:</strong></td>
+	<td><%= format_date(@fragment.updated_at) %></td>
+</tr>
+	</table>

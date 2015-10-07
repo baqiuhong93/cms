@@ -1,0 +1,5 @@
+<% if params[:subject].nil? %>
+	<%= render :partial => 'form' %>
+<% else %>
+	<%= render :partial => 'subject_form' %>
+<% end %>

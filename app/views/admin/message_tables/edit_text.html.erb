@@ -1,0 +1,95 @@
+<%= form_tag update_text_admin_message_table_path(:id => @message_table.id), :method => :post, :id => 'edit_message_text_form' do %>
+<%= hidden_field_tag :text_id, @message_text._id %>
+<table class="table table-bordered">
+	<% @message_table.message_columns.each do |message_column| %>
+		<tr>
+			<td width="15%" style="text-align:right;"><strong><%= message_column.name %>:</strong></td>
+			<% if message_column.edit %>
+				<% if message_column.type_id == 1 || message_column.type_id == 5 %>
+					<td><%= text_field_tag message_column.column_name.to_sym, @message_text.text[message_column.column_name] %></td>
+				<% elsif message_column.type_id == 2 %>
+					<td>
+					<%= select_tag message_column.column_name.to_sym, options_from_collection_for_select(message_column.json_value_hash, :first, :last, @message_text.text[message_column.column_name]), include_blank: true %>
+					</td>
+				<% elsif message_column.type_id == 3 %>
+					<td>
+					<% message_column.json_value_hash.each do |k,v| %>
+						<% if @message_text.text[message_column.column_name].nil? %>
+							<%= check_box_tag "#{message_column.column_name}[]", k %> <%= v %>
+						<% else %>
+							<% if @message_text.text[message_column.column_name].include?(k) %>
+								<%= check_box_tag "#{message_column.column_name}[]", k, true %> <%= v %>
+							<% else %>
+								<%= check_box_tag "#{message_column.column_name}[]", k %> <%= v %>
+							<% end %>
+						<% end %>
+					<% end %>
+					</td>
+				<% elsif message_column.type_id == 4 %>
+					<td>
+					<% message_column.json_value_hash.each do |k,v| %>
+						<% if @message_text.text[message_column.column_name].nil? %>
+							<%= radio_button_tag message_column.column_name.to_sym, k %> <%= v %>
+						<% else %>
+							<% if @message_text.text[message_column.column_name] == k %>
+								<%= radio_button_tag message_column.column_name.to_sym, k, true %> <%= v %>
+							<% else %>
+								<%= radio_button_tag message_column.column_name.to_sym, k %> <%= v %>
+							<% end %>
+						<% end %>
+					<% end %>
+					</td>
+				<% end %>
+			<% else %>
+				<% if message_column.json_value_hash.empty? %>
+					<td><%= @message_text.text[message_column.column_name] %></td>
+				<% else %>
+					<% if @message_text.text[message_column.column_name].start_with?("[") && @message_text.text[message_column.column_name].end_with?("]") %>
+					<td>
+						<% eval(@message_text.text[message_column.column_name]).each do |md| %>
+						<%= message_column.json_value_hash[md] %> 
+						<% end %>
+					</td>
+					<% else %>
+					<td><%= message_column.json_value_hash[@message_text.text[message_column.column_name]] %></td>
+					<% end %>
+				<% end %>
+			<% end %>
+		</tr>
+	<% end %>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>创建日期:</strong></td>
+		<td><%= format_date(@message_text.created_at) %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>修改日期:</strong></td>
+		<td><%= format_date(@message_text.updated_at) %></td>
+	</tr>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>IP:</strong></td>
+		<td><%= @message_text.ip %></td>
+	</tr>
+	<% if @message_text.user_id > 0 %>
+	<tr>
+		<td width="15%" style="text-align:right;"><strong>用户名:</strong></td>
+		<td><%= @message_text.user_name %></td>
+	</tr>
+	<% end %>
+	<tr>
+		<td style="text-align:center;" colspan="2"><%= submit_tag "修改", :class => 'btn', :type => :button, :onclick => 'update_message_text_form()' %></td>
+	</tr>
+</table>
+<% end %>
+
+<%= content_for :javascripts do %>
+<script type="text/javascript" charset="utf-8">
+	$.fn.serializeObject=function(){"use strict";var a={},b=function(b,c){var d=a[c.name];"undefined"!=typeof d&&d!==null?$.isArray(d)?d.push(c.value):a[c.name]=[d,c.value]:a[c.name]=c.value};return $.each(this.serializeArray(),b),a};
+	
+	function update_message_text_form() {
+		$.post($('#edit_message_text_form').attr('action'), $('#edit_message_text_form').serializeObject(), function(data) {
+			alert(data.msg);	
+		});
+	}
+</script>
+<% end %>
+

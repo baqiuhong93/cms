@@ -1,0 +1,101 @@
+<%= form_tag index_text_admin_message_table_path(@message_table), :method => :get, :class => "form-horizontal", :id => "message_text_form" do %>
+
+<% query_message_columns = @message_table.message_columns.where(:query => true) %>
+<table width="100%">
+<% query_message_columns.length.times do |t| %>
+	<% if t == 0 || t%2 == 0%>
+	<tr>
+	<% end %>
+	<th class="span1">
+	    <%= label_tag query_message_columns[t].column_name.to_sym, query_message_columns[t].name %>
+	</th>
+	<td class="span5">
+		<% if query_message_columns[t].type_id == 1 || query_message_columns[t].type_id == 5 %>
+			<%= text_field_tag query_message_columns[t].column_name.to_sym, params[query_message_columns[t].column_name.to_sym] %>
+		<% elsif query_message_columns[t].type_id == 2 %>
+			<%= select_tag query_message_columns[t].column_name.to_sym, options_from_collection_for_select(query_message_columns[t].json_value_hash, :first, :last, params[query_message_columns[t].column_name.to_sym]), include_blank: true %>
+		<% elsif query_message_columns[t].type_id == 3 %>
+			<% query_message_columns[t].json_value_hash.each do |k,v| %>
+				<% if params[query_message_columns[t].column_name.to_sym].nil? %>
+					<%= check_box_tag "#{query_message_columns[t].column_name}[]", k %> <%= v %>
+				<% else %>
+					<% if params[query_message_columns[t].column_name.to_sym].include?(k) %>
+						<%= check_box_tag "#{query_message_columns[t].column_name}[]", k, true %> <%= v %>
+					<% else %>
+						<%= check_box_tag "#{query_message_columns[t].column_name}[]", k %> <%= v %>
+					<% end %>
+				<% end %>
+			<% end %>
+		<% elsif query_message_columns[t].type_id == 4 %>
+			<% query_message_columns[t].json_value_hash.each do |k,v| %>
+				<% if params[query_message_columns[t].column_name.to_sym].nil? %>
+					<%= radio_button_tag query_message_columns[t].column_name.to_sym, k %> <%= v %>
+				<% else %>
+					<% if params[query_message_columns[t].column_name.to_sym] == k %>
+						<%= radio_button_tag query_message_columns[t].column_name.to_sym, k, true %> <%= v %>
+					<% else %>
+						<%= radio_button_tag query_message_columns[t].column_name.to_sym, k %> <%= v %>
+					<% end %>
+				<% end %>
+			<% end %>
+		<% end %>
+	</td>
+	<% if (t != 0 && t%2 != 0) || t == query_message_columns.length-1 %>
+	</tr>
+	<% end %>
+<% end %>
+	<tr>
+        <td colspan="4" style="text-align:center;">
+			<%= submit_tag "查询", :class => "btn", :onclick => "$('#message_text_form').attr('action', $('#message_text_form').attr('action').replace('.xls',''))" %>
+			<%= submit_tag "重置", :class => "btn", :type => :button, :onclick => "reset_form('message_text_form')" %>
+			<%= submit_tag "Excel", :class => "btn", :onclick => "$('#message_text_form').attr('action', $('#message_text_form').attr('action')+'.xls')" %>
+		</td>
+	</tr>
+</table>
+<% end %>
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+		<% @message_table.message_columns.each do |message_column| %>
+			<% if message_column.show_index %>
+            	<th><%= message_column.name %></th>
+			<% end %>
+		<% end %>
+		<th>创建日期</th>
+        <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+	  <% @message_texts.each do |message_text| %>
+	  <tr>
+		<% @message_table.message_columns.each do |message_column| %>
+			<% if message_column.show_index %>
+				<% if message_column.json_value_hash.empty? %>
+					<td><%= message_text.text[message_column.column_name] %></td>
+				<% else %>
+					<% if message_text.text[message_column.column_name].kind_of?(Array) %>
+					<td>
+						<% message_text.text[message_column.column_name].each do |md| %>
+						<%= message_column.json_value_hash[md] %> 
+						<% end %>
+					</td>
+					<% else %>
+					<td><%= message_column.json_value_hash[message_text.text[message_column.column_name]] %></td>
+					<% end %>
+				<% end %>
+			<% end %>
+		<% end %>
+		<td>
+			<%= format_date(message_text.created_at) %>
+		</td>
+		<td>
+			<%= link_to '详', show_text_admin_message_table_path(:id => @message_table.id, :text_id => message_text.id), :title => '详细' %>
+			<%= link_to '改', edit_text_admin_message_table_path(:id => @message_table.id, :text_id => message_text.id), :title => '修改' %>
+			<%= link_to '删', destroy_text_admin_message_table_path(:id => @message_table.id, :text_id => message_text.id), :method => :delete, :data => { :confirm => '确认删除?' }, :title => '删除' %>
+		</td>
+	</tr>
+	  <% end %>
+  </tbody>
+</table>
+<%= will_paginate @message_texts, :renderer => BootstrapPagination::Rails %>

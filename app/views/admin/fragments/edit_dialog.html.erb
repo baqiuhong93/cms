@@ -1,0 +1,54 @@
+<%= form_for @fragment, :url => (@fragment.id.present? ? admin_fragment_path(@fragment, :format => :js) : admin_fragments_path(:format => :js)), :html => { :class => 'form-horizontal' } do |f| %>
+<% if @fragment.errors.any? %>
+    <div class="alert alert-error">
+      <ul>
+      <% @fragment.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+<div class="control-group">
+	<%= f.label :title, "*名称:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :title, :maxlength => 255 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :unique_code, "编码:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_field :unique_code, :maxlength => 32 %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :title, "分类:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.select :type_id, Fragment.type_hash.collect {|k,v| [v,k] } %>
+	</div>
+</div>
+<div class="control-group">
+	<%= f.label :content, "内容:", :class => "control-label" %>
+	<div class="controls">
+	   <%= f.text_area :content, :class => "span12", :rows => 60 %>
+	</div>
+</div>
+    <div class="form-actions">
+    <%= f.submit "保存", :class => 'btn btn-primary' %>
+	<a href="javascript:alert(window.parent);" onclick="alert(parent);parent.close_fragment_dialog();" class="btn">取消</a>
+  </div>
+<% end -%>
+
+<%= content_for :javascripts do -%>
+<%= javascript_include_tag "ckeditor" %>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+	if (typeof CKEDITOR != 'undefined') { 
+		CKEDITOR.replace('fragment_content', {
+			extraPlugins : 'autogrow',
+			autoGrow_maxHeight : 800,
+			removePlugins : 'resize'
+		}); 
+	}
+});	
+</script>
+<% end %>

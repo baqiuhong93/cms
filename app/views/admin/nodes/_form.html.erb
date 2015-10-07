@@ -1,0 +1,339 @@
+<% @parent_node = Node.find(@node.pId) if @node.pId > 0 %>
+<%= form_for @node, :url => (@node.id.present? ? admin_node_path(@node) : admin_nodes_path), :html => { :class => 'form-horizontal', :id => "node_tree_form", :multipart => true, :onsubmit => "return valid_node_form();" } do |f| %>
+<% if @node.errors.any? %>
+    <div class="alert alert-error">
+      <ul>
+      <% @node.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+<%= f.hidden_field :pId %>
+<%= f.hidden_field :temp_article_id %>
+<%= f.hidden_field :temp_node_id %>
+<div class="control-group">
+    <%= f.label :name, "*名称:", :class => "control-label" %>
+    <div class="controls">
+      <%= f.text_field :name, :placeholder => "必填", :maxlength => 255, :class => "span6" %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :show_name, "显示名称:", :class => "control-label" %>
+    <div class="controls">
+      <%= f.text_field :show_name, :placeholder => "", :maxlength => 255, :class => "span6" %>
+    </div>
+  </div>
+  
+  <div class="control-group">
+      <%= f.label :unique_code, "编码:", :class => "control-label" %>
+      <div class="controls">
+        <%= f.text_field :unique_code, :placeholder => "选填、必须唯一", :maxlength => 32 %>
+      </div>
+    </div>
+	
+    <div class="control-group">
+      <%= f.label :keywords, "关键词:", :class => "control-label" %>
+      <div class="controls">
+  		<%= f.text_field :keywords, :maxlength => 255, :class => "span6" %>
+      </div>
+    </div>
+  
+  <div class="control-group">
+    <%= f.label :description, "描述:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.text_area :description, :rows => 5, :maxlength => 255, :class => "span6" %>
+    </div>
+  </div>
+  
+  <div class="control-group">
+    <%= f.label "*父栏目:", :class => "control-label" %>
+    <div class="controls">
+		<select disabled="true">
+			<option><%= @parent_node.nil? ? "根节点" : @parent_node.name %></option>
+		</select>
+    </div>
+  </div>
+ 
+  <div class="control-group">
+    <%= f.label :domain_id, "*域名:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.select :domain_id, Domain.all.collect {|domain| [domain.name, domain.id]}, :prompt => "请选择" %>
+    </div>
+  </div>
+   
+  <div class="control-group" id="node_type_div">
+    <%= f.label :node_type, "*节点类型:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.select :node_type, Node.node_type_hash.collect {|k,v| [v,k]}, :prompt => "请选择"  %>
+    </div>
+  </div>
+ 
+  <div class="control-group">
+    <%= f.label :url, "*节点路径:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.text_field :url, :placeholder => "必填，例：/abc/#id_#pageNo.html", :maxlength => 255, :class => "span6" %> 栏目ID: #id  页数: #pageNo
+    </div>
+  </div>
+  <div class="control-group" disabled_node_type_1="true">
+    <%= f.label :article_url, "*文章路径:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.text_field :article_url, :placeholder => "例：/abc/#id_#pageNo.html", :maxlength => 255, :class => "span6" %> 文章ID: #id  页数: #pageNo
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :list_order_id, "文章排序:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.select :list_order_id, Node.list_order_hash.collect {|k,v| [v,k]}, :prompt => "请选择" %>
+    </div>
+  </div>
+  
+  <div class="control-group">
+    <%= f.label :per_page_size, "每页文章条数:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.text_field :per_page_size %>
+    </div>
+  </div>
+  
+  <div class="control-group">
+    <%= f.label :nav, "导航:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.check_box :nav, :value => 1 %>
+    </div>
+  </div>
+  
+  <div class="control-group">
+    <%= f.label :sortrank, "排序:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.select :sortrank, 1..99 %>
+    </div>
+  </div>
+  
+  <div class="control-group">
+    <%= f.label :click, "点击数:", :class => "control-label" %>
+    <div class="controls">
+		<%= f.text_field :click, :maxlength => 11 %>
+    </div>
+  </div>
+  
+
+  <div class="control-group">
+    <%= f.label :temp_node, "栏目模板:", :class => "control-label" %>
+    <div class="controls">
+		<input type="radio" id="temp_node_type" name="temp_node_type" value="1" onclick="$('#temp_node_select2').hide();$('#temp_node_file').show();">上传页面 <input type="radio" id="temp_node_type" name="temp_node_type" value="2" onclick="$('#temp_node_select2').show();$('#temp_node_file').hide();">选择模板
+		<span id="temp_node_select2" style="display:none;">
+			<input type="text" id="temp_node_id_select2" class="span6" value="<%= @node.temp_node.nil? ? '' : @node.temp_node.id %>">
+		</span>
+		<span id="temp_node_file">
+			<input type="file" name="temp_node_file" id="temp_node_file">
+		</span>
+    </div>
+  </div>
+  
+  <div class="control-group" disabled_node_type_1="true">
+      <label class="control-label" for="temp_article_id_select2">文章模板:</label>
+      <div class="controls">
+  		<input type="text" id="temp_article_id_select2" class="span6" value="<%= @node.temp_article.nil? ? '' : @node.temp_article.id %>">
+      </div>
+    </div>
+	
+    <div class="form-actions">
+    <%= f.submit "保存", :class => 'btn btn-primary' %>
+    <%= link_to '取消', admin_fragments_path, :class => 'btn' %>
+  </div>
+<% end -%>
+<%= content_for :javascripts do -%>
+<script type="text/javascript" charset="utf-8">
+function node_node_form_submit() {
+	$("#node_tree_form").submit();
+}
+
+function valid_node_form() {
+	
+	if($("#node_pId").val() == '') {
+		alert("请选择父栏目!");
+		return false;
+	}
+	
+	if($("#node_domain_id").val() == '') {
+		alert("请选择域名!");
+		return false;
+	}
+	
+	if($("#node_node_type").val() == '') {
+		alert("请选择节点类型!");
+		return false;
+	}
+	
+	
+	if($("#node_node_type").val() == 1) {//频道
+		var cate_url = $("#node_url").val();
+		if(!cate_url.startWith("/") || !cate_url.endWith(".html")) {
+			alert("节点路径不符合规则!");
+			$("#node_url").focus();
+			return false;
+		}
+	}
+	
+	if($("#node_node_type").val() == 2) {//分类
+		var cate_url = $("#node_url").val();
+		if(!cate_url.startWith("/") || !cate_url.endWith(".html")) {
+			alert("节点路径不符合规则!");
+			$("#node_url").focus();
+			return false;
+		}
+		if(cate_url.indexOf("#pageNo") == -1) {
+			alert("节点路径没有包含分页参数!");
+			$("#node_url").focus();
+			return false;
+		}
+		var article_url = $("#node_article_url").val();
+		if(!article_url.startWith("/") || !article_url.endWith(".html")) {
+			alert("文章路径不符合规则!");
+			$("#node_article_url").focus();
+			return false;
+		}
+		if(article_url.indexOf("#id") == -1) {
+			alert("文章路径没有包含文章ID!");
+			$("#node_article_url").focus();
+			return false;
+		}
+		if(article_url.indexOf("#pageNo") == -1) {
+			alert("文章路径没有包含分页参数!");
+			$("#node_article_url").focus();
+			return false;
+		}
+		
+		if($("#node_temp_article_id").val() == '') {
+			alert("请选择文章模板!");
+			return false;
+		}
+	}
+	return true;
+}
+
+function node_node_reload(cateId) {
+	window.parent.node_node_reload(cateId);
+}
+
+$(function() {
+	
+	<% if !@parent_node.nil? &&  @parent_node.list? %>
+	$("#node_type_div").hide();
+	$("#node_node_type").attr("readonly", true);
+	$("#node_node_type").val("2");
+	<% end %>
+	
+	<% if @node.id.present? %>
+		$("#node_domain_id").attr("readonly", true);
+		$("#node_node_type").attr("readonly", true);
+		$("#node_url").attr("readonly", true);
+		<% if @node.temp_node_id.present? %>
+			$("input[name=temp_node_type]").eq(1).click()
+		<% else %>
+			$("input[name=temp_node_type]").eq(0).click()
+		<% end %>
+	<% else %>
+		$("#temp_node_type").attr("checked", "1");
+	<% end %>
+	
+	var node_type_value = $("#node_node_type").val();
+	for(var i=1;i<=3;i++) {
+		$("div[disabled_node_type_"+i+"='true']").each(function() {
+			if (i == node_type_value) {
+				$(this).hide();
+			} else {
+				$(this).show();
+			}
+		});
+	}
+	
+	$("#temp_article_id_select2").select2({
+	    placeholder: "请选择文章模板",
+	    minimumInputLength: 3,
+	    ajax: {
+	        url: "<%= admin_html_templates_path(:format => :json) %>?type_id=3",
+	        dataType: 'json',
+	        quietMillis: 100,
+	        data: function (term, page) {
+	            return {
+	                q: term,
+	                page_limit: 10,
+	                page: page
+	            };
+	        },
+	        results: function (data, page) {
+	            return {results: data, more: false};
+	        }
+	    },
+		<% if !@node.temp_article.nil? %>
+    	initSelection: function(element, callback) {	
+			callback({"id":<%= @node.temp_article.id %>, "name":"<%= @node.temp_article.name %>"});
+    	},
+		<% end %>
+	    formatResult: function(node) {return node.name},
+	    formatSelection: function(node) {$("#node_temp_article_id").val(node.id);return node.name},
+	    dropdownCssClass: "bigdrop",
+	    escapeMarkup: function (m) { return m; }
+	});
+	
+	$("#temp_node_id_select2").select2({
+	    placeholder: "请选择列表模板",
+	    minimumInputLength: 3,
+	    ajax: {
+	        url: "<%= admin_html_templates_path(:format => :json) %>?type_id=2",
+	        dataType: 'json',
+	        quietMillis: 100,
+	        data: function (term, page) {
+	            return {
+	                q: term,
+	                page_limit: 10,
+	                page: page
+	            };
+	        },
+	        results: function (data, page) {
+	            return {results: data, more: false};
+	        }
+	    },
+		<% if !@node.temp_node.nil? %>
+    	initSelection: function(element, callback) {	
+			callback({"id":<%= @node.temp_node.id %>, "name":"<%= @node.temp_node.name %>"});
+    	},
+		<% end %>
+	    formatResult: function(node) {return node.name},
+	    formatSelection: function(node) {$("#node_temp_node_id").val(node.id);return node.name},
+	    dropdownCssClass: "bigdrop",
+	    escapeMarkup: function (m) { return m; }
+	});
+	
+	$("#node_node_type").change(function() {
+		var node_type_value = this.value;
+		
+		if (node_type_value == 1) {
+			
+			//$("input[id=temp_node_type][value=1]").attr("checked",true);
+			//$("#temp_node_select2").hide();
+			//$("#temp_node_file").show();
+		}
+		if (node_type_value == 2) {
+			//$("input[id=temp_node_type][value=2]").attr("checked",true);
+			//$("#temp_node_file").hide();
+			//$("#temp_node_select2").show();
+		}
+		
+		for(var i=1;i<=3;i++) {
+			$("div[disabled_node_type_"+i+"='true']").each(function() {
+				if (i == node_type_value) {
+					$(this).hide();
+				} else {
+					$(this).show();
+				}
+			});
+		}
+	});
+});
+	
+</script>
+<% end -%>
+
+ 

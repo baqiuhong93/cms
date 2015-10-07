@@ -1,0 +1,361 @@
+<%= form_for @article, :url => (@article.id.present? ? admin_article_path(@article) : admin_articles_path), :html => { :class => 'form-horizontal', :multipart => true, :onsubmit => "return valid_article_form();", :id => "article_form" } do |f| %>
+<div class="form-actions">
+  <%= f.submit "保存", :class => 'btn btn-primary' %>
+  <%= link_to '取消', query_url(admin_articles_path, Article, @current_user.uid), :class => 'btn' %>
+</div>
+<% if @article.errors.any? %>
+	<div class="alert alert-error">
+	  <ul>
+	  <% @article.errors.full_messages.each do |msg| %>
+	    <li><%= msg %></li>
+	  <% end %>
+	  </ul>
+	</div>
+<% end %>
+<%= f.hidden_field :node_id %>
+<%= f.hidden_field :sub_node_ids %>
+<%= f.hidden_field :page_size %>
+<%= f.hidden_field :origin_id %>
+<%= f.hidden_field :tag_list %>
+	<div class="control-group">
+		<label class="control-label" for="node_select2">*栏目:</label>
+		<div class="controls">
+		  <input type="text" id="node_select2" class="span6" value="<%= @article.node.nil? ? '' : @article.node.name %>">
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="sub_node_select2">副栏目:</label>
+		<div class="controls">
+		  <input type="text" id="sub_node_select2" class="span6">
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :title, "*标题:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_field :title, :class => "span7", :placeholder =>  '必填，1到180个字符之间', :maxlength => 180 %>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<%= f.label :sub_title, "副标题:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_field :sub_title, :class => "span7", :placeholder =>  '0到300个字符之间', :maxlength => 300 %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :short_title, "短标题:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_field :short_title, :class => "span7", :placeholder =>  '0到36个字符之间', :maxlength => 36 %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= label_tag :tag_list_select2, "标签:", :class => "control-label" %>
+		<div class="controls">
+		  <input type="text" id="tag_list_select2">
+		</div>
+	</div>
+	<div class="control-group">
+		<%= label_tag :tag_name, "新增标签:", :class => "control-label" %>
+		<div class="controls">
+		  <input type="text" id="tag_name" class="span2" placeholder="标签名称">
+		  <input type="button" value="+" class="btn btn-primary" onclick="create_tag()">
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :description, "摘要:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_area :description, :class => "span7", :rows => 4, :maxlength => 1500 %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :commend, "推荐:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.check_box :commend, :value => 1 %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :img_path, "附图:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.file_field :img_path %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :writer, "作者:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_field :writer, :maxlength => 15 %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :seo_keyword, "SEO关键词:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_area :seo_keyword, :maxlength => 1000, :rows => 4 %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :seo_description, "SEO描述:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_area :seo_description, :maxlength => 1000, :rows => 4 %>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="origin_select2">来源:</label>
+		<div class="controls">
+			<input type="text" id="origin_select2" class="span6">
+		</div>
+	</div>
+	<div class="control-group">
+		<%= label_tag :origin_name, "新增来源:", :class => "control-label" %>
+		<div class="controls">
+		  <input type="text" id="origin_name" class="span3" placeholder="名称">
+		  <input type="text" id="origin_addr" class="span6" placeholder="地址，例：http://www.domain.com">
+		  <input type="button" value="+" class="btn btn-primary" onclick="create_origin()">
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :created_at, "创建时间:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_field :created_at, :value => format_date(@article.created_at), :onfocus => "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})", :class => "Wdate", :readonly => true %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :released_at, "发布时间:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_field :released_at, :value => format_date(@article.released_at), :onfocus => "WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})", :class => "Wdate", :readonly => true %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :sortrank, "排序:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.select :sortrank, 1..99 %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.label :click, "点击数:", :class => "control-label" %>
+		<div class="controls">
+		  <%= f.text_field :click %>
+		</div>
+	</div>
+	<div class="control-group">
+		<%= f.fields_for :article_text do |fat| %>
+			<%= fat.label :content, "*内容:", :class => "control-label" %>
+			<div class="controls">
+			  <%= fat.text_area :content, :class => "span10", :rows => 50 %>
+			</div>
+		<% end %>
+	</div>
+    <div class="form-actions">
+    <%= f.submit "保存", :class => 'btn btn-primary' %>
+    <%= link_to '取消', query_url(admin_articles_path, Article, @current_user.uid), :class => 'btn' %>
+  </div>
+<% end -%>
+
+<%= content_for :javascripts do -%>
+<%= javascript_include_tag "ckeditor" %>
+<script type="text/javascript" charset="utf-8" src="/module/my97/WdatePicker.js"></script>
+<script type="text/javascript" charset="utf-8">
+var _global_article_tags = <%= @article.tags.to_json.html_safe %>;
+function valid_article_form() {
+	if ($("#article_node_id").val() == '') {
+		alert("请选择栏目!");
+		return false;
+	}
+	
+	if ($("#article_title").val() == '') {
+		alert("标题不能为空!");
+		return false;
+	}
+	
+	var ckeditorContent = CKEDITOR.instances.article_article_text_attributes_content.getData();
+	if(ckeditorContent == '') {
+		alert("内容不能为空!");
+		return false;
+	}
+	
+	$("#article_page_size").val(ckeditorContent.split('<div style="page-break-after: always;"><span style="display: none;">&nbsp;</span></div>').length);
+	var _sub_node_select2 = $("#sub_node_select2").select2("data");
+	var sub_ids = [];
+	for(var i=0,len=_sub_node_select2.length;i<len;i++) {
+		sub_ids.push(_sub_node_select2[i].id);
+	}
+	$("#article_sub_node_ids").val(sub_ids.join(","));
+	var _tag_list = [];
+	for(var i=0,len=_global_article_tags.length;i<len;i++) {
+		_tag_list.push(_global_article_tags[i].name);
+	}
+	$("#article_tag_list").val(_tag_list.join(","));
+	return true;
+}
+
+function create_tag() {
+	var _tag_name = $.trim($("#tag_name").val());
+	if (_tag_name == '') {
+		alert("标签名称不能为空!");
+		$("#tag_name").focus();
+		return;
+	}
+	$.post("<%= admin_tags_path(:format => :json) %>", {"tag_name" : _tag_name}, function(jsonData) {
+		if (jsonData.status == 0) {
+			alert("标签名称重复!");
+		} else {
+			$("#tag_name").val('');
+			_global_article_tags.push({"id" : jsonData.tag.id, "name" : jsonData.tag.name});
+			$("#tag_list_select2").select2("data", _global_article_tags);
+			alert("标签新增成功!");
+		}
+	});
+}
+
+function create_origin() {
+	var _origin_name = $.trim($("#origin_name").val());
+	var _origin_addr = $.trim($("#origin_addr").val());
+	if (_origin_name == '') {
+		alert("来源名称不能为空!");
+		$("#origin_name").focus();
+		return;
+	}
+	if (_origin_addr == '') {
+		alert("来源地址不能为空!");
+		$("#origin_addr").focus();
+		return;
+	}
+	$.post("<%= admin_origins_path(:format => :json) %>", {"origin_addr[name]" : _origin_name, "origin_addr[addr]" : _origin_addr}, function(jsonData) {
+		if (jsonData.status == 0) {
+			alert("来源新增失败!");
+		} else {
+			$("#origin_name").val('');
+			$("#origin_addr").val('');
+			$("#origin_select2").select2("data", {"id" : jsonData.origin.id, "name" : jsonData.origin.name});
+			alert("来源新增成功!");
+		}
+	});
+}
+
+$(function() {
+	$("#node_select2").select2({
+	    placeholder: "请选择栏目",
+	    minimumInputLength: 3,
+	    ajax: {
+	        url: "<%= admin_nodes_path(:format => :json) %>",
+	        dataType: 'json',
+	        quietMillis: 100,
+	        data: function (term, page) {
+	            return {
+	                q: term,
+	                page_limit: 10,
+	                page: page
+	            };
+	        },
+	        results: function (data, page) {
+	            return {results: data, more: false};
+	        }
+	    },
+		<% if !@article.node.nil? %>
+    	initSelection: function(element, callback) {
+			callback({"id":<%= @article.node.id %>, "name":"<%= @article.node.name %>"});	
+    	},
+		<% end %>
+	    formatResult: function(node) {return node.name},
+	    formatSelection: function(node) {$("#article_node_id").val(node.id);return node.name},
+	    dropdownCssClass: "bigdrop",
+	    escapeMarkup: function (m) { return m; }
+	});
+	
+	$("#sub_node_select2").select2({
+	    placeholder: "请选择副栏目",
+		multiple: true,
+	    minimumInputLength: 2,
+	    ajax: {
+	        url: "<%= admin_nodes_path(:format => :json) %>",
+	        dataType: 'json',
+	        quietMillis: 100,
+	        data: function (term, page) {
+	            return {
+	                q: term,
+	                page_limit: 10,
+	                page: page
+	            };
+	        },
+	        results: function (data, page) {
+	            return {results: data, more: false};
+	        }
+	    },
+	    formatResult: function(node) {return node.name},
+		formatSelection: function(node) {return node.name},
+	    dropdownCssClass: "bigdrop",
+	    escapeMarkup: function (m) { return m; }
+	});
+	$("#sub_node_select2").select2("data", <%= @article.sub_node_string.gsub("'","\"").html_safe %>);
+	
+	$("#tag_list_select2").select2({
+	    placeholder: "请选择标签",
+	    minimumInputLength: 1,
+		multiple: true,
+	    ajax: {
+	        url: "<%= admin_tags_path(:format => :json) %>",
+	        dataType: 'json',
+	        quietMillis: 100,
+	        data: function (term, page) {
+	            return {
+	                q: term,
+	                page_limit: 10,
+	                page: page
+	            };
+	        },
+	        results: function (data, page) {
+	            return {results: data, more: false};
+	        }
+	    },
+	    formatResult: function(tag) {return tag.name;},
+	    formatSelection: function(tag) { return tag.name;},
+	    dropdownCssClass: "bigdrop",
+	    escapeMarkup: function (m) { return m; }
+	});
+	$("#tag_list_select2").select2("data", _global_article_tags);
+	$("#tag_list_select2").on("change", function(e) {
+		if(!!e.added) {
+			_global_article_tags.push({"id" : e.added.id, "name" : e.added.name});
+		}
+		if(!!e.removed) {
+			_global_article_tags = $("#tag_list_select2").select2("data");
+		}
+	});
+	
+	$("#origin_select2").select2({
+	    placeholder: "请选择来源",
+	    minimumInputLength: 2,
+	    ajax: {
+	        url: "<%= admin_origins_path(:format => :json) %>",
+	        dataType: 'json',
+	        quietMillis: 100,
+	        data: function (term, page) {
+	            return {
+	                q: term,
+	                page_limit: 10,
+	                page: page
+	            };
+	        },
+	        results: function (data, page) {
+	            return {results: data, more: false};
+	        }
+	    },
+	    formatResult: function(origin) {return origin.name},
+	    formatSelection: function(origin) {$("#article_origin_id").val(origin.id);return origin.name},
+	    dropdownCssClass: "bigdrop",
+	    escapeMarkup: function (m) { return m; }
+	});
+	<% if !@article.origin.nil? %>
+	$("#origin_select2").select2("data", {"id":<%= @article.origin.id %>, "name":"<%= @article.origin.name %>"});
+	<% end %>
+
+	
+	if (typeof CKEDITOR != 'undefined') {
+		CKEDITOR.replace('article_article_text_attributes_content', {
+			extraPlugins : 'autogrow',
+			autoGrow_maxHeight : 800,
+			removePlugins : 'resize'
+		}); 
+	}
+});
+</script>
+<% end -%>
+

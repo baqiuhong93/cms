@@ -1,0 +1,33 @@
+<div class="newstop">
+        <a href="http://m.xredu.com/"></a>
+        <p>
+            <%=@node.name %>
+        </p>
+        <div class="clear">
+        </div>
+    </div>
+    <h3 class="news_h3">
+        <a href="tel:4006202002" onclick="ga('send','event','tel','tel-huizongwenzhang','tel-400');">咨询热线：400-620-2002</a>
+    </h3>
+    <% @node.children.each do |node| %>
+    <h3 class="hp_grh3">
+        <span><%=node.name %></span> <a href="<%=node.mobile_list_url %>">更多</a>
+        <div class="clear">
+        </div>
+    </h3>
+    <div class="news_list2">
+        <ul>
+            <% node.articles.where("status = 2 and released = true").order("commend DESC, id DESC").limit(4).each do |article| %>
+            <li><a href="<%=article.html_page_first_url %>"><%=(article.title.length > 22 ? article.title[0...22] : article.title) %></a> <div class="clear"></div></li>
+            <% end %>
+        </ul>
+        <div class="clear"></div>
+    </div>
+
+    <h2 class="hp_redh2">
+        <a href="tel:4006202002" onclick="ga('send','event','tel','tel-huizongwenzhang','tel-400');">客服电话:400-620-2002 </a>
+    </h2>
+
+    <% end %>
+<%= Fragment.find(589).content.html_safe %>
+

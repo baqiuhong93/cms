@@ -1,0 +1,9 @@
+<ul id="member_controller_actions" class="nav nav-tabs">
+	<li<%= request.fullpath==eval('admin_'+@_module_name+'_path(@'+@_module_name+')') ? ' class=active' : '' %>><%= link_to('<i class="icon-info-sign"></i>显示'.html_safe, eval('admin_'+@_module_name+'_path(@'+@_module_name+')')) %></li>
+	<% if @_module_edit.nil? %>
+	<li<%= request.fullpath==eval('edit_admin_'+@_module_name+'_path(@'+@_module_name+')') ? ' class=active' : '' %>><%= link_to('<i class="icon-edit"></i>修改'.html_safe, eval('edit_admin_'+@_module_name+'_path(@'+@_module_name+')')) %></li>
+	<% end %>
+	<% if @_module_delete.nil? %>
+	<li><%= link_to('<i class="icon-remove"></i>删除'.html_safe, eval('admin_'+@_module_name+'_path(@'+@_module_name+')'), :method => :delete, :data => { :confirm => '确认删除?' }) %></li>
+	<% end %>
+</ul>

@@ -1,0 +1,8 @@
+<ul id="collection_controller_actions" class="nav nav-tabs">
+	<li<%= request.path==eval('admin_'+@_module_name.pluralize+'_path') ? ' class=active' : '' %>><%= link_to('<i class="icon-th-list"></i>列表'.html_safe, query_url(eval('admin_'+@_module_name.pluralize+'_path'), @__module_name.constantize, @current_user.uid)) %></li>
+	<% if @_module_new.nil? %>
+		<% if can? :create, @_module_name.to_sym %>
+		<li<%= request.path==eval('new_admin_'+@_module_name+'_path') ? ' class=active' : '' %>><%= link_to('<i class="icon-plus"></i>新增'.html_safe, eval('new_admin_'+@_module_name+'_path')) %></li>
+		<% end %>
+	<% end %>
+</ul>

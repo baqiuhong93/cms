@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>教师资格证考试官网手机版-教师资格证考试培训权威机构-欣瑞教育</title>
+	<meta name="keywords" content="教师资格证,考试,面试,说课,培训,辅导,免费视频,真题,资料"/>
+	<meta name="description" content="欣瑞教育，教师资格证考试培训权威机构，十余年专注教师资格证和教师考编培训！"/>
+    <%= csrf_meta_tags %>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"
+        name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta content="email=no" name="format-detection" />
+    <link rel="Stylesheet" type="text/css" href="<%= GlobalSettings.css_domain %>mobTheme/StyleSheet.css" />
+
+    <script type="text/javascript" src="<%= GlobalSettings.js_domain %>js/jquery-1.7.1.min.js"></script>
+     <script type="text/javascript">
+         $(document).ready(function () {		 
+             $("#stafooter_toolsa").click(function () {
+                 $(".jumpdiv").slideToggle("fast", function () {
+                     if ($(".jumpdiv").is(":visible")) {
+                         $("#stafooter_toolsa").html("收起");
+                     }
+                     else {
+                         $("#stafooter_toolsa").html("更多");
+
+                     }
+                 });
+
+
+             });
+			 var vht = ($(document).width() / 16) * 12;
+            $(".news_video").css("height", vht);
+            $(".news_video").children("video").css("width", $(document).width());
+            $(".news_video").children("video").css("height", vht);
+
+            $.getJSON('http://login.xredu.com/users/status?callback=?',{},function (data){
+                if (data.sign_in) {
+                    $("#sign_in_link").parent.hide();
+                    $("#sign_up_link").parent.hide();
+                } else {
+                    $("#sign_in_link").attr("href", "http://login.xredu.com/users/sign_in?service="+location.href);
+                    $("#sign_up_link").attr("href", "http://login.xredu.com/users/sign_up?service="+location.href);
+                }
+            });
+         });
+      
+    </script>
+</head>
+<body>
+<%= yield %>
+<%= yield :javascripts %>
+</body>
+</html>

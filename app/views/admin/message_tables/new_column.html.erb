@@ -1,0 +1,27 @@
+<%= form_for @message_table, :url => create_columns_admin_message_table_path(@message_table), :html => { :class => 'form-horizontal', :id => "message_table_columns_form", :method => :post } do |f| %>
+<%= f.fields_for :message_columns do |mc| %>
+<table class="table table-bordered">
+	<tr>
+		<th><%= f.label :name, "名称:" %></th><td><%= mc.text_field :name %></td>
+		<th><%= f.label :column_name, "英文名:" %></th><td><%= mc.text_field :column_name %></td>
+		<th><%= f.label :show_index, "列表显示?:" %></th><td><%= mc.check_box :show_index, {}, "true", "false" %></td>
+		<th><%= f.label :edit, "修改?:" %></th><td><%= mc.check_box :edit, {}, "true", "false" %></td>
+		<th><%= mc.label :export, "导出?:" %></th><td><%= mc.check_box :export, {}, "true", "false" %></td>
+	</tr>
+	<tr>
+		<th><%= mc.label :sortrank, "排序:" %></th><td><%= mc.select :sortrank, 1..99 %></td>
+		<th><%= mc.label :type_id, "类型:" %></th><td><%= mc.select :type_id, MessageColumn.type_hash.collect {|k,v| [v,k]} %></td>
+		<th><%= mc.label :default_value, "默认值:" %></th><td colspan="3"><%= mc.text_field :default_value %></td>
+		<th><%= mc.label :query, "查询?:" %></th><td><%= mc.check_box :query, {}, "true", "false" %></td>
+	</tr>
+	<tr>
+		<th><%= mc.label :json_value, "类型值:" %></th><td colspan="7"><%= mc.text_field :json_value, :class => "span12", :placeholder => '{"key-1" : "value-1", "key-2" : "value-2"}' %></td>
+		<th><%= mc.label :_destroy, "删除:" %></th><td><%= mc.check_box :_destroy %></td>
+	</tr>
+</table>
+<% end %>
+  <div class="form-actions">
+  <%= f.button :submit, :class => 'btn btn-primary' %>
+  <%= link_to '取消', admin_message_tables_path, :class => 'btn' %>
+</div>
+<% end %>

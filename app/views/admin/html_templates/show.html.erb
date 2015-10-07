@@ -1,0 +1,31 @@
+<%= render :partial => '/admin/public/actions' %>
+<table class="table table-bordered">
+		<tr>
+			<td width="15%" style="text-align:right;"><strong>名称:</strong></td>
+			<td><%= @html_template.name %></td>
+		</tr>
+		<tr>
+			<td width="15%" style="text-align:right;"><strong>类型:</strong></td>
+			<td><%= HtmlTemplate.type_hash[@html_template.type_id] %></td>
+		</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>路径:</strong></td>
+		<td><%= @html_template.jsp_path %></td>
+	</tr>
+	<tr>
+	<td width="15%" style="text-align:right;"><strong>下载编码:</strong></td>
+	<td><%= @html_template.down_code %></td>
+</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>用户名:</strong></td>
+		<td><%= @html_template.user_name %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>创建时间:</strong></td>
+		<td><%= format_date(@html_template.created_at) %></td>
+	</tr>
+		<tr>
+		<td width="15%" style="text-align:right;"><strong>修改时间:</strong></td>
+		<td><%= format_date(@html_template.updated_at) %></td>
+	</tr>
+	</table>
